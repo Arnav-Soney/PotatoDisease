@@ -1,7 +1,7 @@
 import os
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import numpy as np
@@ -23,30 +23,66 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-MODEL = tf.keras.models.load_model("saved_models/1.keras")
+# Load all models
+MODELS = {
+    "potato": tf.keras.models.load_model("saved_models/1.keras"),
+    "pepper": tf.keras.models.load_model("saved_models/2.keras"),
+    "tomato": tf.keras.models.load_model("saved_models/3.keras"),
+}
 
-CLASS_NAMES = ["Early Blight", "Late Blight", "Healthy"]
+# Class names for each crop
+CLASS_NAMES = {
+    "potato": ["Early Blight", "Late Blight", "Healthy"],
+    "pepper": ["Bacterial Spot", "Healthy"],
+    "tomato": [
+        "Bacterial Spot", "Early Blight", "Late Blight", "Leaf Mold",
+        "Septoria Leaf Spot", "Spider Mites", "Target Spot",
+        "Yellow Leaf Curl Virus", "Mosaic Virus", "Healthy"
+    ],
+}
 
 @app.get("/ping")
 async def ping():
     return "Hello, I am alive"
+
+@app.get("/crops")
+async def get_crops():
+    """Return available crops for prediction"""
+    return {
+        "crops": [
+            {"id": "potato", "name": "Potato", "icon": "🥔"},
+            {"id": "pepper", "name": "Pepper", "icon": "🌶️"},
+            {"id": "tomato", "name": "Tomato", "icon": "🍅"},
+        ]
+    }
 
 def read_file_as_image(data) -> np.ndarray:
     image = np.array(Image.open(BytesIO(data)))
     return image
 
 @app.post("/predict")
-async def predict(file: UploadFile):
+async def predict(
+    file: UploadFile = File(...),
+    crop: str = Form(default="potato")
+):
+    # Validate crop type
+    if crop not in MODELS:
+        return {"error": f"Invalid crop type. Available: {list(MODELS.keys())}"}
+    
     image = read_file_as_image(await file.read())
     img_batch = np.expand_dims(image, 0)
 
-    predictions = MODEL.predict(img_batch)
+    model = MODELS[crop]
+    class_names = CLASS_NAMES[crop]
+    
+    predictions = model.predict(img_batch)
 
-    predicted_class = CLASS_NAMES[np.argmax(predictions[0])]
+    predicted_class = class_names[np.argmax(predictions[0])]
     confidence = np.max(predictions[0])
     return {
         'class': predicted_class,
-        'confidence': float(confidence)
+        'confidence': float(confidence),
+        'crop': crop
     }
 
 
