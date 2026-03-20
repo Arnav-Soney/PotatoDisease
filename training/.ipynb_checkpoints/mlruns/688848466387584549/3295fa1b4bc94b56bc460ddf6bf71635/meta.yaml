@@ -1,0 +1,14 @@
+artifact_uri: /Users/arnav.soney@zomato.com/Documents/OpenSource/PotatoDisease/training/.ipynb_checkpoints/mlruns/688848466387584549/3295fa1b4bc94b56bc460ddf6bf71635/artifacts
+end_time: 1773929134316
+entry_point_name: ''
+experiment_id: '688848466387584549'
+lifecycle_stage: active
+run_id: 3295fa1b4bc94b56bc460ddf6bf71635
+run_name: efficientnetv2_phase2_finetune
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1773918973149
+status: 3
+tags: []
+user_id: arnav.soney@zomato.com

@@ -1,0 +1,22 @@
+{
+  "class_names": [
+    "Tomato_Bacterial_spot",
+    "Tomato_Early_blight",
+    "Tomato_Late_blight",
+    "Tomato_Leaf_Mold",
+    "Tomato_Septoria_leaf_spot",
+    "Tomato_Spider_mites_Two_spotted_spider_mite",
+    "Tomato__Target_Spot",
+    "Tomato__Tomato_YellowLeaf__Curl_Virus",
+    "Tomato__Tomato_mosaic_virus",
+    "Tomato_healthy"
+  ],
+  "num_classes": 10,
+  "image_size": 224,
+  "backbone": "efficientnetv2",
+  "calibration_temperature": 0.5,
+  "confidence_threshold": 0.7,
+  "mc_dropout_samples": 10,
+  "test_accuracy": 0.6403186321258545,
+  "test_loss": 0.15167880058288574
+}
